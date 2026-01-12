@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a9b7c6;
+            margin-bottom: 30px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, background 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #8f9ba8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #wpm {
+            color: #00ff9d;
+        }
+        
+        #accuracy {
+            color: #00d9ff;
+        }
+        
+        #timer {
+            color: #ff0080;
+        }
+        
+        #errors {
+            color: #ff5555;
+        }
+        
+        .text-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #sample-text {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #c5c8c6;
+            margin-bottom: 20px;
+            min-height: 150px;
+        }
+        
+        #typing-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            resize: none;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        #typing-input:focus {
+            border: 2px solid #00d9ff;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #start-btn {
+            background: linear-gradient(90deg, #00dbde, #0093E9);
+            color: white;
+        }
+        
+        #reset-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        #start-btn:hover {
+            background: linear-gradient(90deg, #0093E9, #00dbde);
+        }
+        
+        #reset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .results {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #00d9ff;
+        }
+        
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .result-stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .performance {
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .highlight {
+            color: #00ff9d;
+            font-weight: bold;
+        }
+        
+        .level-beginner { color: #ff5555; }
+        .level-intermediate { color: #ffaa00; }
+        .level-advanced { color: #55ff55; }
+        .level-expert { color: #00aaff; }
+        .level-master { color: #aa00ff; }
+        
+        .char {
+            padding: 2px;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+        
+        .char.correct {
+            color: #00ff9d;
+            background: rgba(0, 255, 157, 0.1);
+        }
+        
+        .char.incorrect {
+            color: #ff5555;
+            background: rgba(255, 85, 85, 0.2);
+            text-decoration: underline;
+        }
+        
+        .char.current {
+            background: rgba(0, 217, 255, 0.3);
+            border-radius: 5px;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 0.95rem;
+            color: #a9b7c6;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions h3 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+            
+            #sample-text {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-keyboard"></i> Typing Speed Test</h1>
+            <p class="subtitle">Test your typing speed and accuracy with this interactive typing test</p>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value" id="wpm">0</div>
+                <div class="stat-label">Words Per Minute</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="accuracy">100%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="timer">60</div>
+                <div class="stat-label">Seconds Remaining</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="errors">0</div>
+                <div class="stat-label">Errors</div>
+            </div>
+        </div>
+        
+        <div class="text-container">
+            <div id="sample-text">
+                <!-- Sample text will be inserted here by JavaScript -->
+            </div>
+            <textarea id="typing-input" placeholder="Click 'Start Test' and begin typing here..." rows="4" disabled></textarea>
+        </div>
+        
+        <div class="controls">
+            <button id="start-btn" class="btn">
+                <i class="fas fa-play"></i> Start Test (1 Minute)
+            </button>
+            <button id="reset-btn" class="btn">
+                <i class="fas fa-redo"></i> Reset Test
+            </button>
+        </div>
+        
+        <div class="results" id="results">
+            <h2><i class="fas fa-trophy"></i> Your Typing Results</h2>
+            <div class="result-stats">
+                <div class="result-stat">
+                    <div class="result-value" id="final-wpm">0</div>
+                    <div>Words Per Minute</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="final-accuracy">100%</div>
+                    <div>Accuracy</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="final-errors">0</div>
+                    <div>Errors</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="final-time">60s</div>
+                    <div>Time Taken</div>
+                </div>
+            </div>
+            <div class="performance" id="performance-level">
+                <!-- Performance level will be shown here -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How It Works</h3>
+            <ul>
+                <li>Click "Start Test" to begin the 1-minute typing test</li>
+                <li>Type the text shown above in the text area as quickly and accurately as possible</li>
+                <li>Your typing speed (WPM) and accuracy will update in real-time</li>
+                <li>After 1 minute, your results will be displayed with a performance rating</li>
+                <li>Use the "Reset Test" button to start over with new text</li>
+            </ul>
+            <p><strong>Tip:</strong> Try to focus on accuracy first, then speed. Don't look at your keyboard!</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample texts for typing test
+        const sampleTexts = [
+            "The quick brown fox jumps over the lazy dog. This sentence contains all letters of the alphabet.",
+            "Programming is the process of creating a set of instructions that tell a computer how to perform a task.",
+            "Practice makes perfect when it comes to typing. Regular practice will help improve your speed and accuracy.",
+            "The future belongs to those who believe in the beauty of their dreams. Always strive for progress.",
+            "Technology is best when it brings people together. The internet connects billions of people worldwide.",
+            "Learning to type quickly and accurately is an essential skill in today's digital world for everyone.",
+            "Success is not final, failure is not fatal: it is the courage to continue that counts in the end."
+        ];
+
+        // DOM Elements
+        const sampleTextElement = document.getElementById('sample-text');
+        const typingInput = document.getElementById('typing-input');
+        const startButton = document.getElementById('start-btn');
+        const resetButton = document.getElementById('reset-btn');
+        const resultsElement = document.getElementById('results');
+        
+        // Stats elements
+        const wpmElement = document.getElementById('wpm');
+        const accuracyElement = document.getElementById('accuracy');
+        const timerElement = document.getElementById('timer');
+        const errorsElement = document.getElementById('errors');
+        
+        // Results elements
+        const finalWpmElement = document.getElementById('final-wpm');
+        const finalAccuracyElement = document.getElementById('final-accuracy');
+        const finalErrorsElement = document.getElementById('final-errors');
+        const finalTimeElement = document.getElementById('final-time');
+        const performanceElement = document.getElementById('performance-level');
+        
+        // Test variables
+        let currentText = '';
+        let timer = 60;
+        let timerInterval;
+        let isTestRunning = false;
+        let startTime;
+        let typedChars = 0;
+        let errorCount = 0;
+        let correctChars = 0;
+        
+        // Initialize with a random sample text
+        function init() {
+            // Get random text
+            const randomIndex = Math.floor(Math.random() * sampleTexts.length);
+            currentText = sampleTexts[randomIndex];
+            
+            // Display text with character spans
+            sampleTextElement.innerHTML = '';
+            for (let i = 0; i < currentText.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.classList.add('char');
+                charSpan.textContent = currentText[i];
+                sampleTextElement.appendChild(charSpan);
+            }
+            
+            // Reset all values
+            typingInput.value = '';
+            typedChars = 0;
+            errorCount = 0;
+            correctChars = 0;
+            timer = 60;
+            
+            // Update display
+            updateStats();
+            
+            // Hide results
+            resultsElement.style.display = 'none';
+            
+            // Reset input field state
+            typingInput.disabled = false;
+            typingInput.placeholder = 'Start typing here when the test begins...';
+            
+            // Highlight first character
+            highlightCurrentChar(0);
+        }
+        
+        // Start the typing test
+        function startTest() {
+            if (isTestRunning) return;
+            
+            isTestRunning = true;
+            startButton.disabled = true;
+            startButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Test Running...';
+            typingInput.disabled = false;
+            typingInput.placeholder = 'Start typing now...';
+            typingInput.focus();
+            
+            // Record start time
+            startTime = new Date();
+            
+            // Start timer
+            timerInterval = setInterval(() => {
+                timer--;
+                timerElement.textContent = timer;
+                
+                if (timer <= 0) {
+                    endTest();
+                }
+            }, 1000);
+            
+            // Update stats every second
+            setInterval(updateStats, 1000);
+        }
+        
+        // End the typing test
+        function endTest() {
+            clearInterval(timerInterval);
+            isTestRunning = false;
+            startButton.disabled = false;
+            startButton.innerHTML = '<i class="fas fa-play"></i> Start Test (1 Minute)';
+            typingInput.disabled = true;
+            
+            // Calculate final stats
+            const timeInMinutes = (60 - timer) / 60;
+            const finalWPM = timeInMinutes > 0 ? Math.round((correctChars / 5) / timeInMinutes) : 0;
+            const finalAccuracy = typedChars > 0 ? Math.round((correctChars / typedChars) * 100) : 100;
+            
+            // Display results
+            finalWpmElement.textContent = finalWPM;
+            finalAccuracyElement.textContent = finalAccuracy + '%';
+            finalErrorsElement.textContent = errorCount;
+            finalTimeElement.textContent = (60 - timer) + 's';
+            
+            // Determine performance level
+            let performanceText = '';
+            let performanceClass = '';
+            
+            if (finalWPM < 20) {
+                performanceText = 'Beginner Level - Keep practicing!';
+                performanceClass = 'level-beginner';
+            } else if (finalWPM >= 20 && finalWPM < 40) {
+                performanceText = 'Intermediate Level - Good job!';
+                performanceClass = 'level-intermediate';
+            } else if (finalWPM >= 40 && finalWPM < 60) {
+                performanceText = 'Advanced Level - Excellent typing!';
+                performanceClass = 'level-advanced';
+            } else if (finalWPM >= 60 && finalWPM < 80) {
+                performanceText = 'Expert Level - You\'re a typing pro!';
+                performanceClass = 'level-expert';
+            } else {
+                performanceText = 'Master Level - Typing champion!';
+                performanceClass = 'level-master';
+            }
+            
+            performanceElement.innerHTML = `Your Performance: <span class="${performanceClass}">${performanceText}</span>`;
+            
+            // Show results
+            resultsElement.style.display = 'block';
+            
+            // Scroll to results
+            resultsElement.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Reset the test
+        function resetTest() {
+            clearInterval(timerInterval);
+            isTestRunning = false;
+            startButton.disabled = false;
+            startButton.innerHTML = '<i class="fas fa-play"></i> Start Test (1 Minute)';
+            
+            init();
+        }
+        
+        // Update real-time statistics
+        function updateStats() {
+            const timeInMinutes = (60 - timer) / 60;
+            
+            // Calculate WPM (words are 5 characters on average)
+            const wpm = timeInMinutes > 0 ? Math.round((correctChars / 5) / timeInMinutes) : 0;
+            
+            // Calculate accuracy
+            const accuracy = typedChars > 0 ? Math.round((correctChars / typedChars) * 100) : 100;
+            
+            // Update display
+            wpmElement.textContent = wpm;
+            accuracyElement.textContent = accuracy + '%';
+            errorsElement.textContent = errorCount;
+        }
+        
+        // Highlight current character
+        function highlightCurrentChar(index) {
+            // Remove current class from all characters
+            const allChars = document.querySelectorAll('#sample-text .char');
+            allChars.forEach(char => {
+                char.classList.remove('current');
+            });
+            
+            // Add current class to current character
+            if (index < allChars.length) {
+                allChars[index].classList.add('current');
+            }
+        }
+        
+        // Handle typing input
+        function handleTyping() {
+            if (!isTestRunning) return;
+            
+            const inputText = typingInput.value;
+            typedChars = inputText.length;
+            
+            // Reset all character highlights
+            const allChars = document.querySelectorAll('#sample-text .char');
+            
+            // Update character highlights based on typing
+            let newErrorCount = 0;
+            let newCorrectChars = 0;
+            
+            for (let i = 0; i < allChars.length; i++) {
+                // Remove previous styling
+                allChars[i].classList.remove('correct', 'incorrect');
+                
+                if (i < inputText.length) {
+                    if (inputText[i] === currentText[i]) {
+                        allChars[i].classList.add('correct');
+                        newCorrectChars++;
+                    } else {
+                        allChars[i].classList.add('incorrect');
+                        newErrorCount++;
+                    }
+                }
+            }
+            
+            // Update error count
+            errorCount = newErrorCount;
+            correctChars = newCorrectChars;
+            
+            // Update current character highlight
+            highlightCurrentChar(inputText.length);
+            
+            // Update stats
+            updateStats();
+            
+            // Check if all text is typed
+            if (inputText.length === currentText.length && inputText === currentText) {
+                // User completed the text - generate new text
+                const randomIndex = Math.floor(Math.random() * sampleTexts.length);
+                currentText = sampleTexts[randomIndex];
+                
+                // Update displayed text
+                sampleTextElement.innerHTML = '';
+                for (let i = 0; i < currentText.length; i++) {
+                    const charSpan = document.createElement('span');
+                    charSpan.classList.add('char');
+                    charSpan.textContent = currentText[i];
+                    sampleTextElement.appendChild(charSpan);
+                }
+                
+                // Clear input
+                typingInput.value = '';
+                typedChars = 0;
+                
+                // Highlight first character
+                highlightCurrentChar(0);
+            }
+        }
+        
+        // Event Listeners
+        startButton.addEventListener('click', startTest);
+        resetButton.addEventListener('click', resetTest);
+        typingInput.addEventListener('input', handleTyping);
+        
+        // Prevent paste in typing input
+        typingInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            alert("Pasting is disabled during the typing test. Please type manually!");
+        });
+        
+        // Initialize the app
+        init();
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + Enter to start test
+            if (e.ctrlKey && e.key === 'Enter') {
+                startTest();
+            }
+            
+            // Ctrl + R to reset test
+            if (e.ctrlKey && e.key === 'r') {
+                resetTest();
+            }
+            
+            // Escape to focus on typing input
+            if (e.key === 'Escape' && isTestRunning) {
+                typingInput.focus();
+            }
+        });
+        
+        // Display keyboard shortcut info
+        console.log("Typing Test Keyboard Shortcuts:");
+        console.log("Ctrl + Enter: Start Test");
+        console.log("Ctrl + R: Reset Test");
+        console.log("Escape: Focus on typing input");
+    </script>
+</body>
+</html>
